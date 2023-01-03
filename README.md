@@ -18,5 +18,5 @@ use redis pipeline to clear keys that never expire
 ## How to use?
 
 ```bash
-go-find-duplicates --redis-host={redis-host}  --redis-password{redis-password}
+redis-clear-keys --redis-host={redis-host} --redis-password={redis-password}
 ```
