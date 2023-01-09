@@ -10,17 +10,21 @@ import (
 )
 
 var (
-	l             sync.Mutex
-	totalCount    = 0
-	totalDelCount = 0
-	redisHost     = ""
-	redisPassword = ""
-	rdb           *redis.Client
+	l              sync.Mutex
+	totalCount     = 0
+	totalDelCount  = 0
+	redisHost      = ""
+	redisPassword  = ""
+	rdb            *redis.Client
+	parallelNumber int
+	batchNumber    int64
 )
 
 func main() {
-	flag.StringVar(&redisHost, "redis-host", "", "")
-	flag.StringVar(&redisPassword, "redis-password", "", "")
+	flag.StringVar(&redisHost, "redis-host", "", "redis host")
+	flag.StringVar(&redisPassword, "redis-password", "", "redis password")
+	flag.IntVar(&parallelNumber, "parallel-number", 100, "number of parallel processing")
+	flag.Int64Var(&batchNumber, "batch-number", 1000, "number of batches")
 	flag.Parse()
 	if redisHost == "" || redisPassword == "" {
 		fmt.Println("redis-host or redis-password can not be empty")
@@ -33,9 +37,9 @@ func main() {
 		return
 	}
 
-	ch := make(chan []string, 1000)
+	ch := make(chan []string, parallelNumber*2)
 	go scanKeys(ch)
-	for i := 0; i <= 100; i++ {
+	for i := 0; i <= parallelNumber; i++ {
 		go consumeKeys(ch)
 	}
 	select {}
@@ -46,7 +50,7 @@ func scanKeys(ch chan []string) {
 	var cursor, tempCursor uint64
 	for {
 		var keys []string
-		keys, tempCursor, err = rdb.Scan(context.Background(), cursor, "*", 1000).Result()
+		keys, tempCursor, err = rdb.Scan(context.Background(), cursor, "*", batchNumber).Result()
 		if err != nil {
 			fmt.Println(err)
 			continue

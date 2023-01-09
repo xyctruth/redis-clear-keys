@@ -20,3 +20,20 @@ use redis pipeline to clear keys that never expire
 ```bash
 redis-clear-keys --redis-host={redis-host} --redis-password={redis-password}
 ```
+
+### Argument
+
+```bash
+redis-clear-keys --redis-host={redis-host} --redis-password={redis-password}
+
+redis-clear-keys -h 
+Usage of redis-clear-keys:
+  -batch-number int
+        number of batches (default 1000)
+  -parallel-number int
+        number of parallel processing (default 100)
+  -redis-host string
+        redis host
+  -redis-password string
+        redis password
+```
