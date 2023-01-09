@@ -1,6 +1,6 @@
-# redis clear keys
+# redis-clear-keys
 
-use redis pipeline to clear keys that never expire
+Use the redis pipeline parallel batch to remove the never expired key
 
 ## How to install?
 
